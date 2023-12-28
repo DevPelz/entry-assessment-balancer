@@ -8,6 +8,10 @@ contract Solution {
     GUILD_AUDIT_CHALLENGE public challenge;
     uint count;
 
+    constructor(GUILD_AUDIT_CHALLENGE chal) {
+        challenge = GUILD_AUDIT_CHALLENGE(chal);
+    }
+
     function solve_challenge_A(address txo) public payable {
         bytes32 c = keccak256(abi.encode("0x44\\0x33\\0x22\\0x11\\0x00", txo));
         challenge.solve_challenge_A{value: msg.value}(c);
@@ -41,7 +45,8 @@ contract Solution {
 contract MyProxy is S_M {
     GUILD_AUDIT_CHALLENGE public challenge;
 
-    constructor() {
+    constructor(GUILD_AUDIT_CHALLENGE chal) {
+        challenge = GUILD_AUDIT_CHALLENGE(chal);
         challenge.solve_challenge_D(address(this));
     }
 
