@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: UNLICENSED
 pragma solidity ^0.8.13;
-import {S_M} from "./sec_ret__miss_ive.sol";
+import {S_M} from "./secret_missive.sol";
 
 contract GUILD_AUDIT_CHALLENGE is S_M {
     //
