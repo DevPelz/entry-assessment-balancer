@@ -3,7 +3,7 @@ pragma solidity ^0.8.23;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-contract Token is ERC20 {
+contract WrapperToken is ERC20 {
     IERC20 tokenIn;
 
     constructor(address _tokenIn) ERC20("Wrapped Token", "WToken") {
