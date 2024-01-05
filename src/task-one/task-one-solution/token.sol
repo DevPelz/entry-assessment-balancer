@@ -30,4 +30,6 @@ contract Token is ERC20 {
         super._update(from, owner, _fee);
         super._update(from, to, _remainder);
     }
+
+    receive() external payable {}
 }
