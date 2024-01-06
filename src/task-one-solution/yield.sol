@@ -172,11 +172,45 @@ contract Yield {
         wrappedToken2.approve(address(vault), tkn2AmtIn);
 
         // join pool
-        vault.joinPool(_poolId, sender, recipient, request);
+        vault.joinPool(_poolId, sender, sender, request);
 
         // update balance
-        balances[sender] += tokensOut;
+        balances[msg.sender] += tokensOut;
     }
 
-    function withdraw() public {}
+    function withdraw(uint amt) public {
+        // check the balance of user
+        if (balances[msg.sender] < amt) {
+            revert("Yield::insufficient funds");
+        }
+        balances[msg.sender] -= amt;
+        uint256[] memory minAmountsOut = new uint256[](_tokens.length);
+
+        bool toInternalBalance = false;
+        bytes32 _poolId = basepool.getPoolId();
+
+        address sender = address(this);
+
+        bytes memory userdata = abi.encode(
+            WeightedPoolUserData.ExitKind.EXACT_BPT_IN_FOR_TOKENS_OUT,
+            amt
+        );
+
+        IVault.ExitPoolRequest memory request = IVault.ExitPoolRequest({
+            assets: _convertERC20sToAssets(_tokens),
+            minAmountsOut: minAmountsOut,
+            userData: userdata,
+            toInternalBalance: toInternalBalance
+        });
+        (, uint[] memory amts) = balancerQ.queryExit(
+            _poolId,
+            sender,
+            sender,
+            request
+        );
+
+        vault.exitPool(_poolId, sender, payable(sender), request);
+        token1.transfer(msg.sender, amts[0]);
+        token2.transfer(msg.sender, amts[1]);
+    }
 }

@@ -53,20 +53,29 @@ contract YieldTest is Test {
     function testDeposit() public {
         testInitialize();
 
-        vm.deal(tester, 4 ether);
         vm.startPrank(tester);
+        vm.deal(tester, 4 ether);
         // mint tokens
         tokenA.mint{value: 1 ether}();
         tokenB.mint{value: 1 ether}();
 
-        uint amtA = tokenA.balanceOf(address(this));
-        uint amtB = tokenA.balanceOf(address(this));
+        uint amtA = tokenA.balanceOf(tester);
+        uint amtB = tokenA.balanceOf(tester);
 
         // approve tokens
         tokenA.approve(address(yield.wrappedToken1()), amtA);
         tokenB.approve(address(yield.wrappedToken2()), amtB);
 
         yield.deposit(amtA, amtB);
+        vm.stopPrank();
+    }
+
+    function testWithdraw() public {
+        testDeposit();
+
+        vm.startPrank(tester);
+        uint amt = 0.1 ether;
+        yield.withdraw(amt);
         vm.stopPrank();
     }
 }
