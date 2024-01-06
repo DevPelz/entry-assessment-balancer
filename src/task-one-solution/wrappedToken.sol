@@ -10,12 +10,15 @@ contract WrapperToken is ERC20 {
         tokenIn = IERC20(_tokenIn);
     }
 
-    function deposit(uint amount) external {
+    function deposit(
+        uint amount,
+        address _to
+    ) external returns (uint amounntToMint) {
         uint balanceBeforeTransfer = tokenIn.balanceOf(address(this));
-        tokenIn.transferFrom(msg.sender, address(this), amount);
+        tokenIn.transferFrom(_to, address(this), amount);
         uint balanceAfterTransfer = tokenIn.balanceOf(address(this));
 
-        uint amounntToMint = balanceAfterTransfer - balanceBeforeTransfer;
+        amounntToMint = balanceAfterTransfer - balanceBeforeTransfer;
         _mint(msg.sender, amounntToMint);
     }
 

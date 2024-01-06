@@ -16,16 +16,17 @@ contract CreatePool {
         IERC20[] memory tokens,
         uint256[] memory normalizedWeights,
         address owner
-    ) external {
-        pool.create(
-            name,
-            symbol,
-            tokens,
-            normalizedWeights,
-            new IRateProvider[](2),
-            300000000000000,
-            owner,
-            0x0
-        );
+    ) external returns (address) {
+        return
+            pool.create(
+                name,
+                symbol,
+                tokens,
+                normalizedWeights,
+                new IRateProvider[](2),
+                300000000000000,
+                owner,
+                0x0
+            );
     }
 }

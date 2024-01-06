@@ -6,7 +6,7 @@ import {Test, console2} from "forge-std/Test.sol";
 import {CreatePool} from "../../src/task-one-solution/createPool.sol";
 import {Token} from "../../src/task-one-solution/token.sol";
 import {WrapperToken} from "../../src/task-one-solution/wrappedToken.sol";
-import {IERC20} from "lib/balancer-v2-monorepo/pkg/interfaces/contracts/solidity-utils/openzeppelin/IERC20.sol";
+import {IERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 
 contract CreatePoolTest is Test {
     CreatePool pool;
