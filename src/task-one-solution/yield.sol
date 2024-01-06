@@ -4,6 +4,7 @@ pragma solidity ^0.8.23;
 import {IERC20} from "lib/openzeppelin-contracts/contracts/token/ERC20/IERC20.sol";
 import "lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IAsset.sol";
 
+import {IBasePool} from "lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IBasePool.sol";
 import {WeightedPoolUserData} from "lib/balancer-v2-monorepo/pkg/interfaces/contracts/pool-weighted/WeightedPoolUserData.sol";
 
 import {IBalancerQueries} from "lib/balancer-v2-monorepo/pkg/interfaces/contracts/standalone-utils/IBalancerQueries.sol";
@@ -21,7 +22,8 @@ contract Yield {
     IVault public constant vault =
         IVault(0xBA12222222228d8Ba445958a75a0704d566BF2C8);
 
-    IBalancerQueries public balancer;
+    IBalancerQueries public balancerQ =
+        IBalancerQueries(0xE39B5e3B6D74016b2F6A9673D7d7493B6DF549d5);
 
     CreatePool public pool;
 
@@ -30,6 +32,10 @@ contract Yield {
     WrapperToken public wrappedToken1;
     WrapperToken public wrappedToken2;
     address public _pool;
+    IBasePool basepool;
+
+    // mapping to track balances of each user
+    mapping(address => uint256) public balances;
 
     constructor(
         address _wrappedToken1,
@@ -69,6 +75,8 @@ contract Yield {
             _amounts,
             address(this)
         );
+
+        basepool = IBasePool(_pool);
     }
 
     function _convertERC20sToAssets(
@@ -121,10 +129,53 @@ contract Yield {
     }
 
     function deposit(uint tkn1AmtIn, uint tkn2AmtIn) public {
-        wrappedToken1.deposit(tkn1AmtIn, msg.sender);
-        wrappedToken2.deposit(tkn2AmtIn, msg.sender);
+        IAsset[] memory assets = _convertERC20sToAssets(_tokens);
 
-        // TODO: implement yield
+        uint256[] memory maxAmountsIn = new uint256[](_tokens.length);
+
+        bool fromInternalBalance = false;
+
+        address sender = address(this);
+        address recipient = msg.sender;
+
+        // deposit wrapped tokens
+        maxAmountsIn[0] = wrappedToken1.deposit(tkn1AmtIn, recipient);
+        maxAmountsIn[1] = wrappedToken2.deposit(tkn2AmtIn, recipient);
+
+        // approve vault to spend tokens
+        bytes memory userData = abi.encode(
+            WeightedPoolUserData.JoinKind.EXACT_TOKENS_IN_FOR_BPT_OUT,
+            maxAmountsIn,
+            0
+        );
+
+        // We need to create a JoinPoolRequest to tell the pool how we we want to add liquidity
+        IVault.JoinPoolRequest memory request = IVault.JoinPoolRequest({
+            assets: assets,
+            maxAmountsIn: maxAmountsIn,
+            userData: userData,
+            fromInternalBalance: fromInternalBalance
+        });
+
+        bytes32 _poolId = basepool.getPoolId();
+        // query to know amount of tokens user will be expecting to recieve
+        (uint tokensOut, uint[] memory amts) = balancerQ.queryJoin(
+            _poolId,
+            sender,
+            recipient,
+            request
+        );
+
+        request.maxAmountsIn = amts;
+
+        wrappedToken1.approve(address(vault), tkn1AmtIn);
+        wrappedToken2.approve(address(vault), tkn2AmtIn);
+
+        // join pool
+        vault.joinPool(_poolId, sender, recipient, request);
+
+        // update balance
+        balances[sender] += tokensOut;
     }
 
     function withdraw() public {}

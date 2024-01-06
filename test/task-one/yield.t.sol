@@ -16,8 +16,9 @@ contract YieldTest is Test {
     WrapperToken wtA;
     WrapperToken wtB;
     Yield yield;
-
     IBasePool basePool;
+
+    address tester = makeAddr("tester");
 
     function setUp() public {
         tokenA = new Token();
@@ -32,7 +33,7 @@ contract YieldTest is Test {
         basePool = IBasePool(yield._pool());
     }
 
-    function testInitialize() external {
+    function testInitialize() public {
         // mint tokens
         tokenA.mint{value: 1 ether}();
         tokenB.mint{value: 1 ether}();
@@ -47,5 +48,25 @@ contract YieldTest is Test {
         // initialize
         bytes32 poolId_ = basePool.getPoolId();
         yield.initializePool(poolId_, amtA, amtB);
+    }
+
+    function testDeposit() public {
+        testInitialize();
+
+        vm.deal(tester, 4 ether);
+        vm.startPrank(tester);
+        // mint tokens
+        tokenA.mint{value: 1 ether}();
+        tokenB.mint{value: 1 ether}();
+
+        uint amtA = tokenA.balanceOf(address(this));
+        uint amtB = tokenA.balanceOf(address(this));
+
+        // approve tokens
+        tokenA.approve(address(yield.wrappedToken1()), amtA);
+        tokenB.approve(address(yield.wrappedToken2()), amtB);
+
+        yield.deposit(amtA, amtB);
+        vm.stopPrank();
     }
 }
