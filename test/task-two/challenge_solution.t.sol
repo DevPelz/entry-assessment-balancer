@@ -2,17 +2,14 @@
 pragma solidity ^0.8.13;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {GUILD_AUDIT_CHALLENGE} from "../src/task-two/ctf-challenge/challenge.sol";
-import {Solution} from "../src/task-two-solution/challenge_solution.sol";
-import {MyProxy} from "../src/task-two-solution/challenge_solution.sol";
+import {GUILD_AUDIT_CHALLENGE} from "../../src/task-two/ctf-challenge/challenge.sol";
+import {Solution} from "../../src/task-two-solution/challenge_solution.sol";
+import {MyProxy} from "../../src/task-two-solution/challenge_solution.sol";
 
 contract ChallengeSolutionTest is Test {
     GUILD_AUDIT_CHALLENGE challenge;
     Solution solution;
     MyProxy proxy;
-
-    // @notice to run the test script successfully use this command
-    // forge t --sender 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266
     address origin = 0xf39Fd6e51aad88F6F4ce6aB8827279cffFb92266;
 
     bytes constant LEVEL_A = (abi.encodePacked("Level A"));

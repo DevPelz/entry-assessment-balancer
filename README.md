@@ -1,66 +1,19 @@
-## Foundry
+# GuildAudits Smart Contract Auditing Bootcamp Assessment Test
 
-**Foundry is a blazing fast, portable and modular toolkit for Ethereum application development written in Rust.**
+The GuildAudits bootcamp assessment test will assess and establish individuals’ knowledge and abilities to build smart contracts. It is designed to understand how you would want to break a vulnerable smart contract.
 
-Foundry consists of:
+### Please follow the processes below to carry out the task and submission correctly.
 
--   **Forge**: Ethereum testing framework (like Truffle, Hardhat and DappTools).
--   **Cast**: Swiss army knife for interacting with EVM smart contracts, sending transactions and getting chain data.
--   **Anvil**: Local Ethereum node, akin to Ganache, Hardhat Network.
--   **Chisel**: Fast, utilitarian, and verbose solidity REPL.
+1. You are to fork this repository with the assessment
+2. Change the public visibility of the forked repo to private
+3. Add davidpius95 , deCyberghost and as a contributor to this forked repo so we would have access to examine your submission.
+4. On completion, push to your forked repository.
+5. Use the [sumbmission link](https://forms.gle/ZPpPCoNHKaSYs5HT7) and drop your solution.
 
-## Documentation
+## FIRST ASSESSMENT
 
-https://book.getfoundry.sh/
+The first assessment examines your experience with building smart contracts.
 
-## Usage
+## SECOND ASSESSMENT
 
-### Build
-
-```shell
-$ forge build
-```
-
-### Test
-
-```shell
-$ forge test
-```
-
-### Format
-
-```shell
-$ forge fmt
-```
-
-### Gas Snapshots
-
-```shell
-$ forge snapshot
-```
-
-### Anvil
-
-```shell
-$ anvil
-```
-
-### Deploy
-
-```shell
-$ forge script script/Counter.s.sol:CounterScript --rpc-url <your_rpc_url> --private-key <your_private_key>
-```
-
-### Cast
-
-```shell
-$ cast <subcommand>
-```
-
-### Help
-
-```shell
-$ forge --help
-$ anvil --help
-$ cast --help
-```
+Attempt to solve the various stages in this [codebase](ctf-challenge/challenge.sol) as it examines your consistency to break vulnerable smart contract.

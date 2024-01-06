@@ -15,6 +15,11 @@ import {IVault} from "lib/balancer-v2-monorepo/pkg/interfaces/contracts/vault/IV
 
 import "./createPool.sol";
 
+/**
+ * @title Yield Contract
+ * @dev A contract that facilitates the deposit and withdrawal of tokens to/from a Balancer pool,
+ *      and tracks users' balances in the pool.
+ */
 contract Yield {
     IERC20 public token1;
     IERC20 public token2;
@@ -37,6 +42,12 @@ contract Yield {
     // mapping to track balances of each user
     mapping(address => uint256) public balances;
 
+    /**
+     * @dev Constructor to initialize the Yield contract.
+     * @param _wrappedToken1 Address of the first wrapped token contract.
+     * @param _wrappedToken2 Address of the second wrapped token contract.
+     * @param _weightedPool Address of the weighted pool contract.
+     */
     constructor(
         address _wrappedToken1,
         address _wrappedToken2,
@@ -79,6 +90,11 @@ contract Yield {
         basepool = IBasePool(_pool);
     }
 
+    /**
+     * @dev Function to convert ERC20 tokens to assets.
+     * @param tokens An array of ERC20 token contracts.
+     * @return assets An array of asset contracts.
+     */
     function _convertERC20sToAssets(
         IERC20[] memory tokens
     ) internal pure returns (IAsset[] memory assets) {
@@ -87,6 +103,13 @@ contract Yield {
             assets := tokens
         }
     }
+
+    /**
+     * @dev Function to initialize the Balancer pool for a user.
+     * @param _poolId Pool identifier.
+     * @param _amount1 Amount of the first token to deposit.
+     * @param _amount2 Amount of the second token to deposit.
+     */
 
     function initializePool(
         bytes32 _poolId,
@@ -128,6 +151,11 @@ contract Yield {
         vault.joinPool(_poolId, sender, recipient, request);
     }
 
+    /**
+     * @dev Function to deposit tokens into the Balancer pool.
+     * @param tkn1AmtIn Amount of the first token to deposit.
+     * @param tkn2AmtIn Amount of the second token to deposit.
+     */
     function deposit(uint tkn1AmtIn, uint tkn2AmtIn) public {
         IAsset[] memory assets = _convertERC20sToAssets(_tokens);
 
@@ -178,6 +206,10 @@ contract Yield {
         balances[msg.sender] += tokensOut;
     }
 
+    /**
+     * @dev Function to withdraw tokens from the Balancer pool.
+     * @param amt Amount of tokens to withdraw.
+     */
     function withdraw(uint amt) public {
         // check the balance of user
         if (balances[msg.sender] < amt) {
